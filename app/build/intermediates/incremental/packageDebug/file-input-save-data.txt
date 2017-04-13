@@ -1,0 +1,15 @@
+#Internal package file, do not edit.
+#Thu Apr 13 23:42:45 CEST 2017
+1.base=C\:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
+1.file=C\:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex
+2.base=C\:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\build\\intermediates\\res\\resources-debug.ap_
+3.set=ANDROID_RESOURCE
+2.set=ANDROID_RESOURCE
+2.file=C\:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\build\\intermediates\\res\\resources-debug.ap_\\AndroidManifest.xml
+count=4
+1.set=DEX
+3.base=C\:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\build\\intermediates\\res\\resources-debug.ap_
+0.set=ANDROID_RESOURCE
+0.base=C\:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\build\\intermediates\\res\\resources-debug.ap_
+3.file=C\:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\build\\intermediates\\res\\resources-debug.ap_\\resources.arsc
+0.file=C\:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\build\\intermediates\\res\\resources-debug.ap_\\res\\layout\\trumpet.xml
