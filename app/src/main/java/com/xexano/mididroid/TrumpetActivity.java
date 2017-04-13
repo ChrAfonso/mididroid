@@ -22,9 +22,12 @@ public class TrumpetActivity extends Activity {
 	private Context context;
 
 	// midi
-	int channel = 0; // TODO make configurable
 	MidiManager midiManager;
 	MidiInputPort sendPort;
+	MidiDeviceInfo[] foundDevices;
+	MidiDevice activeDevice;
+
+	int channel = 0; // TODO make configurable
 
 	// midi note layout
 	private int numRegisters = 9;
@@ -62,13 +65,18 @@ public class TrumpetActivity extends Activity {
         		public boolean onTouch(View v, MotionEvent e) {
 //				System.out.println("Touch at "+e.getX()+", "+e.getY());
 
+				if(activeDevice == null) {
+					initMidi();
+					return false;
+				}
+
 				if(e.getAction() == MotionEvent.ACTION_DOWN) {
 					if(e.getX() < main.getWidth()/2) {
 						//left
-						setRegisterForYp(e.getY()/main.getHeight());
+						setRegisterForYp(1 - e.getY()/main.getHeight());
 					} else if(e.getX() > main.getWidth()/2) {
 						//right
-						float fraction = (e.getY()/main.getHeight());
+						float fraction = 1 - (e.getY()/main.getHeight());
 						if(fraction < 0.33) {
 							setValve(0, true);
 						} else if(fraction < 0.66) {
@@ -100,7 +108,7 @@ public class TrumpetActivity extends Activity {
 				else if(e.getAction() == MotionEvent.ACTION_MOVE) {
 					// TODO swipe only for registers
 					if(e.getX() < main.getWidth()/2) {
-						setRegisterForYp(e.getY()/main.getHeight());
+						setRegisterForYp(1 - e.getY()/main.getHeight());
 					}
 				}
 	        	
@@ -108,7 +116,7 @@ public class TrumpetActivity extends Activity {
 			}
 		});
 		
-		initMidi();
+//		initMidi();
 	}
 	
 	private int portIndex = 0;
@@ -123,12 +131,25 @@ public class TrumpetActivity extends Activity {
 					if(device == null) {
 						// ERROR
 					} else {
-						System.out.println("Opening send device "+device.toString());
-						sendPort = device.openInputPort(portIndex++);
+						setActiveDevice(device);
 					}
 				}
 			}, new Handler(Looper.getMainLooper()));
 		}
+	}
+
+	public void setActiveDevice(MidiDevice device) {
+		if(activeDevice != null) {
+			try {
+				activeDevice.close();
+			} catch(IOException e) {
+				System.out.println(e);
+			}
+		}
+
+		System.out.println("Opening send device "+device.toString());
+		activeDevice = device;
+		sendPort = device.openInputPort(portIndex++);
 	}
 
 	private void setRegisterForYp(double yp) {
