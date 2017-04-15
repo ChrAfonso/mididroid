@@ -2,5 +2,9 @@
     {
         "merged": "C:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\build\\intermediates\\res\\merged\\debug\\layout\\trumpet.xml",
         "source": "C:\\Users\\Christian\\AndroidStudioProjects\\mididroid\\app\\src\\main\\res\\layout\\trumpet.xml"
+    },
+    {
+        "merged": "C:\\Users\\chris\\projects\\mididroid\\app\\build\\intermediates\\res\\merged\\debug\\layout\\trumpet.xml",
+        "source": "C:\\Users\\chris\\projects\\mididroid\\app\\src\\main\\res\\layout\\trumpet.xml"
     }
 ]

@@ -2,6 +2,7 @@ package com.xexano.mididroid;
 
 import android.app.Activity;
 import android.content.Context;
+import android.media.midi.MidiOutputPort;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,9 +24,10 @@ public class TrumpetActivity extends Activity {
 
 	// midi
 	MidiManager midiManager;
-	MidiInputPort sendPort;
 	MidiDeviceInfo[] foundDevices;
 	MidiDevice activeDevice;
+	MidiInputPort sendPort;
+	MidiOutputPort outputPort;
 
 	int channel = 0; // TODO make configurable
 
@@ -130,6 +132,7 @@ public class TrumpetActivity extends Activity {
 				public void onDeviceOpened(MidiDevice device) {
 					if(device == null) {
 						// ERROR
+						System.out.println("ERROR: Could not open midi device!");
 					} else {
 						setActiveDevice(device);
 					}
@@ -149,7 +152,8 @@ public class TrumpetActivity extends Activity {
 
 		System.out.println("Opening send device "+device.toString());
 		activeDevice = device;
-		sendPort = device.openInputPort(portIndex++);
+		sendPort = device.openInputPort(0);
+		outputPort = device.openOutputPort(0);
 	}
 
 	private void setRegisterForYp(double yp) {
@@ -191,7 +195,7 @@ public class TrumpetActivity extends Activity {
 		try {
 			 System.out.println("Sending Note off: "+number);
 			 System.out.println("Bytes: "+bytes[0]+" "+bytes[1]+" "+bytes[2]);
-			sendPort.send(bytes, 0, 0);
+			sendPort.send(bytes, 0, 3);
 		} catch(IOException e) {
 			System.out.println(e);
 		}
@@ -204,7 +208,7 @@ public class TrumpetActivity extends Activity {
 			byte[] bytes = {(byte)(0x90 + channel), (byte)number, (byte)velocity};
 			 System.out.println("Sending Note on: "+number+","+velocity);
 			 System.out.println("Bytes: "+bytes[0]+" "+bytes[1]+" "+bytes[2]);
-			sendPort.send(bytes, 0, 0);
+			sendPort.send(bytes, 0, 3);
 		} catch(IOException e) {
 			System.out.println(e);
 		}
