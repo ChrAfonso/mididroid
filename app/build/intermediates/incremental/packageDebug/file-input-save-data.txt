@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Sat Apr 15 23:24:53 CEST 2017
+#Sun Apr 16 04:22:07 CEST 2017
 1.base=C\:\\Users\\chris\\projects\\mididroid\\app\\build\\intermediates\\res\\resources-debug.ap_
 1.file=C\:\\Users\\chris\\projects\\mididroid\\app\\build\\intermediates\\res\\resources-debug.ap_\\resources.arsc
 2.base=C\:\\Users\\chris\\projects\\mididroid\\app\\build\\intermediates\\res\\resources-debug.ap_

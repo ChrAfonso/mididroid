@@ -2,6 +2,7 @@ package com.xexano.mididroid;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.media.midi.MidiOutputPort;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import java.io.IOException;
 public class TrumpetActivity extends Activity {
 
 	private Context context;
+	private View main;
 
 	// midi
 	MidiManager midiManager;
@@ -30,10 +32,15 @@ public class TrumpetActivity extends Activity {
 	MidiOutputPort outputPort;
 
 	int channel = 0; // TODO make configurable
+	// TODO make port configurable
+
+	// finger tracking
+	int maxNumFingers = 4; // 1 for register, 3 for valves
+	int currentRegisterFinger = 0;
 
 	// midi note layout
 	private int numRegisters = 9;
-	private int startNote = 46; // middle Bb -- TODO make configurable
+	private int startNote = 58; // middle Bb -- TODO make configurable
 	private int[] registerOffsets = {0, 7, 12, 16, 19, 22, 24, 26, 28};
 	
 	// current state
@@ -60,61 +67,75 @@ public class TrumpetActivity extends Activity {
 
 		context = this;//getApplicationContext();
 
-		final LinearLayout main = (LinearLayout) findViewById(R.id.trumpet_view);
-//		final LinearLayout main = new LinearLayout(context);
-        	main.setOnTouchListener(new View.OnTouchListener() {
-	        	@Override
-        		public boolean onTouch(View v, MotionEvent e) {
-//				System.out.println("Touch at "+e.getX()+", "+e.getY());
+		main = findViewById(R.id.trumpet_view);
+		main.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent e) {
+//				System.out.println("Touch Event "+e.getAction()+" at "+e.getX()+", "+e.getY());
 
 				if(activeDevice == null) {
 					initMidi();
 					return false;
 				}
 
-				if(e.getAction() == MotionEvent.ACTION_DOWN) {
-					if(e.getX() < main.getWidth()/2) {
-						//left
-						setRegisterForYp(1 - e.getY()/main.getHeight());
-					} else if(e.getX() > main.getWidth()/2) {
-						//right
-						float fraction = 1 - (e.getY()/main.getHeight());
-						if(fraction < 0.33) {
-							setValve(0, true);
-						} else if(fraction < 0.66) {
-							setValve(1, true);
-						} else {
-							setValve(2, true);
-						}
-					}
-				}
-				
-				else if(e.getAction() == MotionEvent.ACTION_UP) {
-					if(e.getX() < main.getWidth()/2) {
-						//left
-						setRegister(-1);
-					} else if(e.getX() > main.getWidth()/2) {
-						//right
-						float fraction = (e.getY()/main.getHeight());
-						if(fraction < 0.33) {
-							setValve(0, false);
-						} else if(fraction < 0.66) {
-							setValve(1, false);
-						} else {
-							setValve(2, false);
-						}
-						
+				int action = e.getAction() & MotionEvent.ACTION_MASK;
+				int nPointers = e.getPointerCount();
+
+				for(int i = 0; i < nPointers; i++) {
+					int id = e.getPointerId(i); // for now we don;t really need this, doesn't matter which finger presses what
+					if(id >= maxNumFingers) continue;
+
+					switch (action) {
+						case MotionEvent.ACTION_DOWN:
+						case MotionEvent.ACTION_POINTER_DOWN:
+							if (e.getX(i) < main.getWidth() / 2) {
+								//left
+								currentRegisterFinger = id; // only last touched finger on register area counts
+								setRegisterForYp(1 - e.getY(i) / main.getHeight());
+							} else if (e.getX(i) > main.getWidth() / 2) {
+								//right
+								float fraction = 1 - (e.getY(i) / main.getHeight());
+								if (fraction < 0.4) {
+									setValve(0, true);
+								} else if (fraction < 0.6) {
+									setValve(1, true);
+								} else if (fraction < 0.8) {
+									setValve(2, true);
+								} else {
+									// TEMP reset button
+									resetMidi();
+								}
+							}
+							break;
+
+						case MotionEvent.ACTION_UP:
+						case MotionEvent.ACTION_POINTER_UP:
+							if (e.getX(i) < main.getWidth() / 2 && currentRegisterFinger == e.getActionIndex()) {
+								//left
+								setRegister(-1);
+							} else if (e.getX(i) > main.getWidth() / 2) {
+								//right
+								float fraction = 1 - (e.getY(i) / main.getHeight());
+								if (fraction < 0.4) {
+									setValve(0, false);
+								} else if (fraction < 0.6) {
+									setValve(1, false);
+								} else if (fraction < 0.8) {
+									setValve(2, false);
+								}
+							}
+							break;
+
+						case MotionEvent.ACTION_MOVE:
+							// TODO swipe only for registers
+							if (e.getX(i) < main.getWidth() / 2 && currentRegisterFinger == e.getActionIndex()) {
+								setRegisterForYp(1 - e.getY(i) / main.getHeight());
+							}
+							break;
 					}
 				}
 
-				else if(e.getAction() == MotionEvent.ACTION_MOVE) {
-					// TODO swipe only for registers
-					if(e.getX() < main.getWidth()/2) {
-						setRegisterForYp(1 - e.getY()/main.getHeight());
-					}
-				}
-	        	
-	        	return true;
+				return true;
 			}
 		});
 		
@@ -141,12 +162,30 @@ public class TrumpetActivity extends Activity {
 		}
 	}
 
+	private void resetMidi() {
+		System.out.println("Trying to reset midi...");
+		if(activeDevice != null) {
+			try {
+				if (sendPort != null) {
+					sendPort.close();
+					System.out.println("Closed port.");
+				}
+				activeDevice.close();
+				System.out.println("Closed device.");
+			} catch(IOException e) {
+				System.out.println("resetMidi:"+e);
+			}
+			sendPort = null;
+			activeDevice = null;
+		}
+	}
+
 	public void setActiveDevice(MidiDevice device) {
 		if(activeDevice != null) {
 			try {
 				activeDevice.close();
 			} catch(IOException e) {
-				System.out.println(e);
+				System.out.println("setActiveDevice: "+e);
 			}
 		}
 
@@ -162,20 +201,26 @@ public class TrumpetActivity extends Activity {
 	}
 
 	private void setRegister(int register) {
-		if(register == -1) {
-			// NOTE OFF
-			this.register = -1;
-		} else if(register < numRegisters) {
-			this.register = register;
-		}
+		if(this.register != register) {
+			System.out.println("setRegister: "+this.register+" -> "+register);
+			if (register == -1) {
+				// NOTE OFF
+				this.register = -1;
+			} else if (register < numRegisters) {
+				this.register = register;
+			}
 
-		updateMidi();
+			updateMidi();
+		}
 	}
 	
 	private void setValve(int valve, boolean pressed) {
 		// TODO range check
-		valves[valve] = pressed ? 1 : 0;
-		updateMidi();
+		int newValue = pressed ? 1 : 0;
+		if(newValue != valves[valve]) {
+			valves[valve] = newValue;
+			updateMidi();
+		}
 	}
 
 	// TODO param for note changed? When we add CCs
@@ -188,16 +233,18 @@ public class TrumpetActivity extends Activity {
 			int midinote = startNote + registerOffsets[register] - (2*valves[0] + valves[1] + 3*valves[2]);
 			note_on(midinote, 64); // TODO velocity by Gyro?
 		}
+
+		updateScreen();
 	}
 	
 	private void note_off(int number) {
 		byte[] bytes = {(byte)(0x80 + channel), (byte)currentNote.number, (byte)0};
 		try {
 			 System.out.println("Sending Note off: "+number);
-			 System.out.println("Bytes: "+bytes[0]+" "+bytes[1]+" "+bytes[2]);
+//			 System.out.println("Bytes: "+bytes[0]+" "+bytes[1]+" "+bytes[2]);
 			sendPort.send(bytes, 0, 3);
 		} catch(IOException e) {
-			System.out.println(e);
+			System.out.println("note_off: "+e);
 		}
 		currentNote = null;
 	}
@@ -207,11 +254,19 @@ public class TrumpetActivity extends Activity {
 		try {
 			byte[] bytes = {(byte)(0x90 + channel), (byte)number, (byte)velocity};
 			 System.out.println("Sending Note on: "+number+","+velocity);
-			 System.out.println("Bytes: "+bytes[0]+" "+bytes[1]+" "+bytes[2]);
+//			 System.out.println("Bytes: "+bytes[0]+" "+bytes[1]+" "+bytes[2]);
 			sendPort.send(bytes, 0, 3);
 		} catch(IOException e) {
-			System.out.println(e);
+			System.out.println("note_on:"+e);
 		}
+	}
+
+	private void updateScreen() {
+		// TODO
+//		Canvas canvas;
+//		main.draw(canvas);
+//
+//		main.invalidate();
 	}
 
 	@Override
@@ -223,13 +278,7 @@ public class TrumpetActivity extends Activity {
 	public void onStop() {
 		super.onStop();
 
-		if(sendPort != null) {
-			try {
-				sendPort.close();
-			} catch(IOException e) {
-				System.out.println(e);
-			}
-		}
+		resetMidi();
 	}
 
 	@Override
