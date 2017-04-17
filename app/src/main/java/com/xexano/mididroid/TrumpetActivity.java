@@ -79,11 +79,13 @@ public class TrumpetActivity extends Activity {
 				}
 
 				int action = e.getAction() & MotionEvent.ACTION_MASK;
+                int actionIndex = e.getActionIndex(); // TODO are other pointers relevant? is there one event per pointer move? or do several change in one event?
 				int nPointers = e.getPointerCount();
 
-				for(int i = 0; i < nPointers; i++) {
+//				for(int i = 0; i < e.getPointerCount(); i++) {
+				int i = actionIndex; // TEST Just process the current action's finger - except for move, where we process the register finger
 					int id = e.getPointerId(i); // for now we don;t really need this, doesn't matter which finger presses what
-					if(id >= maxNumFingers) continue;
+					if(id >= maxNumFingers) return false; //continue;
 
 					switch (action) {
 						case MotionEvent.ACTION_DOWN:
@@ -110,7 +112,7 @@ public class TrumpetActivity extends Activity {
 
 						case MotionEvent.ACTION_UP:
 						case MotionEvent.ACTION_POINTER_UP:
-							if (e.getX(i) < main.getWidth() / 2 && currentRegisterFinger == e.getActionIndex()) {
+							if (e.getX(i) < main.getWidth() / 2 && currentRegisterFinger == id) {
 								//left
 								setRegister(-1);
 							} else if (e.getX(i) > main.getWidth() / 2) {
@@ -127,13 +129,16 @@ public class TrumpetActivity extends Activity {
 							break;
 
 						case MotionEvent.ACTION_MOVE:
-							// TODO swipe only for registers
-							if (e.getX(i) < main.getWidth() / 2 && currentRegisterFinger == e.getActionIndex()) {
-								setRegisterForYp(1 - e.getY(i) / main.getHeight());
+							// NOTE swipe only for registers, so process register finger, no matter which finger triggered the event (move events always triggered on first finger down)
+							int regIndex = e.findPointerIndex(currentRegisterFinger);
+							if(regIndex > -1 && regIndex < e.getPointerCount()) {
+								if (e.getX(regIndex) < main.getWidth() / 2) {
+									setRegisterForYp(1 - e.getY(regIndex) / main.getHeight());
+								}
 							}
 							break;
 					}
-				}
+//				} // for
 
 				return true;
 			}

@@ -1,4 +1,4 @@
-#Sun Apr 16 04:22:07 CEST 2017
+#Mon Apr 17 02:11:27 CEST 2017
 base.0=C\:\\Users\\chris\\projects\\mididroid\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
 renamed.0=classes.dex
 file.0=C\:\\Users\\chris\\projects\\mididroid\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex
