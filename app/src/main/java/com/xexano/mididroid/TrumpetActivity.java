@@ -38,6 +38,10 @@ public class TrumpetActivity extends Activity {
 	int maxNumFingers = 4; // 1 for register, 3 for valves
 	int currentRegisterFinger = 0;
 
+	int deltaX_CC = 11; // TODO make configurable - like CC2 for emulating breath controller. change to something else if using together with breath controller
+	boolean usePressXForVelocity = false; // TODO make configurable
+	int velocity = 64; // middle velo as default
+
 	// midi note layout
 	private int numRegisters = 9;
 	private int startNote = 58; // middle Bb -- TODO make configurable
@@ -82,69 +86,76 @@ public class TrumpetActivity extends Activity {
                 int actionIndex = e.getActionIndex(); // TODO are other pointers relevant? is there one event per pointer move? or do several change in one event?
 				int nPointers = e.getPointerCount();
 
-//				for(int i = 0; i < e.getPointerCount(); i++) {
 				int i = actionIndex; // TEST Just process the current action's finger - except for move, where we process the register finger
-					int id = e.getPointerId(i); // for now we don;t really need this, doesn't matter which finger presses what
-					if(id >= maxNumFingers) return false; //continue;
+				int id = e.getPointerId(i); // for now we don;t really need this, doesn't matter which finger presses what
+				if(id >= maxNumFingers) return false;
 
-					switch (action) {
-						case MotionEvent.ACTION_DOWN:
-						case MotionEvent.ACTION_POINTER_DOWN:
-							if (e.getX(i) < main.getWidth() / 2) {
-								//left
-								currentRegisterFinger = id; // only last touched finger on register area counts
-								setRegisterForYp(1 - e.getY(i) / main.getHeight());
-							} else if (e.getX(i) > main.getWidth() / 2) {
-								//right
-								float fraction = 1 - (e.getY(i) / main.getHeight());
-								if (fraction < 0.4) {
-									setValve(0, true);
-								} else if (fraction < 0.6) {
-									setValve(1, true);
-								} else if (fraction < 0.8) {
-									setValve(2, true);
-								} else {
-									// TEMP reset button
-									resetMidi();
-								}
-							}
-							break;
+				// NOTE: Currently, left half is used for register, right quarter for valves (middle 3/5 y)
+				switch (action) {
+					case MotionEvent.ACTION_DOWN:
+					case MotionEvent.ACTION_POINTER_DOWN:
+						if (e.getX(i) < main.getWidth() / 2) {
+							//left
+							currentRegisterFinger = id; // only last touched finger on register area counts
 
-						case MotionEvent.ACTION_UP:
-						case MotionEvent.ACTION_POINTER_UP:
-							if (e.getX(i) < main.getWidth() / 2 && currentRegisterFinger == id) {
-								//left
-								setRegister(-1);
-							} else if (e.getX(i) > main.getWidth() / 2) {
-								//right
-								float fraction = 1 - (e.getY(i) / main.getHeight());
-								if (fraction < 0.4) {
-									setValve(0, false);
-								} else if (fraction < 0.6) {
-									setValve(1, false);
-								} else if (fraction < 0.8) {
-									setValve(2, false);
-								}
+							if(usePressXForVelocity) {
+								velocity = (int)(e.getX(i)/(main.getWidth() / 2)*127);
+							} else {
+								setExpression((int) (e.getX(i)/(main.getWidth() / 2)*127));
 							}
-							break;
+							setRegisterForYp(1 - e.getY(i) / main.getHeight());
+						} else if (e.getX(i) > main.getWidth() * 0.75) {
+							//right
+							float fraction = 1 - (e.getY(i) / main.getHeight());
+							if (fraction < 0.4) {
+								setValve(0, true);
+							} else if (fraction < 0.6) {
+								setValve(1, true);
+							} else if (fraction < 0.8) {
+								setValve(2, true);
+							} else {
+								// TEMP reset button
+								resetMidi();
+							}
+						}
+						break;
 
-						case MotionEvent.ACTION_MOVE:
-							// NOTE swipe only for registers, so process register finger, no matter which finger triggered the event (move events always triggered on first finger down)
-							int regIndex = e.findPointerIndex(currentRegisterFinger);
-							if(regIndex > -1 && regIndex < e.getPointerCount()) {
-								if (e.getX(regIndex) < main.getWidth() / 2) {
-									setRegisterForYp(1 - e.getY(regIndex) / main.getHeight());
-								}
+					case MotionEvent.ACTION_UP:
+					case MotionEvent.ACTION_POINTER_UP: // for up, also check dead area between register and valve area
+						if (e.getX(i) < main.getWidth() * 0.75 && currentRegisterFinger == id) {
+							//left
+							setRegister(-1);
+						} else if (e.getX(i) > main.getWidth() * 0.75) {
+							//right
+							float fraction = 1 - (e.getY(i) / main.getHeight());
+							if (fraction < 0.4) {
+								setValve(0, false);
+							} else if (fraction < 0.6) {
+								setValve(1, false);
+							} else if (fraction < 0.8) {
+								setValve(2, false);
 							}
-							break;
-					}
-//				} // for
+						}
+						break;
+
+					case MotionEvent.ACTION_MOVE:
+						// NOTE swipe only for registers, so process register finger, no matter which finger triggered the event (move events always triggered on first finger down)
+						int regIndex = e.findPointerIndex(currentRegisterFinger);
+						if(regIndex > -1 && regIndex < e.getPointerCount()) {
+							if (e.getX(regIndex) < main.getWidth() / 2) {
+								setRegisterForYp(1 - e.getY(regIndex) / main.getHeight());
+
+								setExpression((int) (e.getX(regIndex)/(main.getWidth() / 2)*127));
+							}
+						}
+						break;
+				}
 
 				return true;
 			}
 		});
-		
-//		initMidi();
+
+//		initMidi(); // wait for first press to give chance to initialize after starting app
 	}
 	
 	private int portIndex = 0;
@@ -200,6 +211,25 @@ public class TrumpetActivity extends Activity {
 		outputPort = device.openOutputPort(0);
 	}
 
+	// NOTE: perhaps misleading, can be mapped to other cc - rename or change functionality?
+	private void setExpression(int value) {
+		setCCValue(deltaX_CC, value);
+	}
+
+	private void setCCValue(int cc, int value) {
+		// clamp to valid values
+		value = Math.min(Math.max(value, 0), 127);
+		cc = Math.min(Math.max(cc, 0), 119);
+
+		byte[] bytes = {(byte)(0xB0 | channel), (byte)(cc), (byte)(value)};
+
+		try {
+			sendPort.send(bytes, 0, 3);
+		} catch(IOException e) {
+			System.out.println("setCCValue: "+e);
+		}
+	}
+
 	private void setRegisterForYp(double yp) {
 		int index = (int)Math.floor(yp*numRegisters);
 		setRegister(index);
@@ -236,7 +266,7 @@ public class TrumpetActivity extends Activity {
 
 		if(register > -1) {
 			int midinote = startNote + registerOffsets[register] - (2*valves[0] + valves[1] + 3*valves[2]);
-			note_on(midinote, 64); // TODO velocity by Gyro?
+			note_on(midinote, velocity);
 		}
 
 		updateScreen();

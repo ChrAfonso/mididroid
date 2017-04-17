@@ -72,11 +72,13 @@
       <file leaf-file-name="TrumpetActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/xexano/mididroid/TrumpetActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="350">
-              <caret line="137" column="29" selection-start-line="137" selection-start-column="29" selection-end-line="137" selection-end-column="29" />
+            <state relative-caret-position="85">
+              <caret line="123" column="119" selection-start-line="123" selection-start-column="119" selection-end-line="123" selection-end-column="119" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <marker date="1492387881225" expanded="true" signature="7099:7260" ph="{...}" />
+                <element signature="e#6777#6778#0" expanded="true" />
+                <element signature="e#6812#6813#0" expanded="true" />
+                <marker date="1492390706290" expanded="true" signature="8234:8395" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -2247,7 +2249,9 @@
           <caret line="130" column="103" selection-start-line="130" selection-start-column="103" selection-end-line="130" selection-end-column="103" />
           <folding>
             <element signature="imports" expanded="true" />
-            <marker date="1492387881225" expanded="true" signature="7099:7260" ph="{...}" />
+            <element signature="e#6777#6778#0" expanded="true" />
+            <element signature="e#6812#6813#0" expanded="true" />
+            <marker date="1492390706290" expanded="true" signature="8234:8395" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -2293,7 +2297,9 @@
           <caret line="151" column="30" selection-start-line="151" selection-start-column="30" selection-end-line="151" selection-end-column="30" />
           <folding>
             <element signature="imports" expanded="true" />
-            <marker date="1492387881225" expanded="true" signature="7099:7260" ph="{...}" />
+            <element signature="e#6777#6778#0" expanded="true" />
+            <element signature="e#6812#6813#0" expanded="true" />
+            <marker date="1492390706290" expanded="true" signature="8234:8395" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -2310,6 +2316,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1734">
           <caret line="102" column="76" selection-start-line="102" selection-start-column="76" selection-end-line="102" selection-end-column="76" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2356,7 +2363,9 @@
           <caret line="151" column="30" selection-start-line="151" selection-start-column="30" selection-end-line="151" selection-end-column="30" />
           <folding>
             <element signature="imports" expanded="true" />
-            <marker date="1492387881225" expanded="true" signature="7099:7260" ph="{...}" />
+            <element signature="e#6777#6778#0" expanded="true" />
+            <element signature="e#6812#6813#0" expanded="true" />
+            <marker date="1492390706290" expanded="true" signature="8234:8395" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -2373,6 +2382,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1734">
           <caret line="102" column="76" selection-start-line="102" selection-start-column="76" selection-end-line="102" selection-end-column="76" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2419,7 +2429,9 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <marker date="1492387881225" expanded="true" signature="7099:7260" ph="{...}" />
+            <element signature="e#6777#6778#0" expanded="true" />
+            <element signature="e#6812#6813#0" expanded="true" />
+            <marker date="1492390706290" expanded="true" signature="8234:8395" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -2428,6 +2440,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1734">
           <caret line="102" column="76" selection-start-line="102" selection-start-column="76" selection-end-line="102" selection-end-column="76" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2513,6 +2526,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="169">
           <caret line="102" column="76" selection-start-line="102" selection-start-column="76" selection-end-line="102" selection-end-column="76" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2545,11 +2559,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/xexano/mididroid/TrumpetActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="137" column="29" selection-start-line="137" selection-start-column="29" selection-end-line="137" selection-end-column="29" />
+        <state relative-caret-position="85">
+          <caret line="123" column="119" selection-start-line="123" selection-start-column="119" selection-end-line="123" selection-end-column="119" />
           <folding>
             <element signature="imports" expanded="true" />
-            <marker date="1492387881225" expanded="true" signature="7099:7260" ph="{...}" />
+            <element signature="e#6777#6778#0" expanded="true" />
+            <element signature="e#6812#6813#0" expanded="true" />
+            <marker date="1492390706290" expanded="true" signature="8234:8395" ph="{...}" />
           </folding>
         </state>
       </provider>
