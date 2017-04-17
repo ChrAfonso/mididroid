@@ -1,3 +1,4 @@
 .gradle
 app/build/intermediates/
 app/build/outputs/
+.idea/workspace.xml
